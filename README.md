@@ -4,8 +4,10 @@ This is a simple [Next.js](https://nextjs.org/) app using the Pages Router.
 
 ## Requirements
 
-- Node.js `>=20.9.0`
+- Node.js `24.x`
 - npm `>=10`
+
+For Vercel deployments, set the Project Settings Node.js Version to `24.x` to match this repo.
 
 ## Quick Start
 
