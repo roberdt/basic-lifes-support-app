@@ -52,7 +52,7 @@ export default function Home() {
       <Head>
         <title>Basic Life Support — Emergency Guide</title>
         <meta name="description" content="Step-by-step Basic Life Support guide covering CPR, AED usage, and choking response." />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico.old" />
       </Head>
 
       {/* ── Header ── */}
