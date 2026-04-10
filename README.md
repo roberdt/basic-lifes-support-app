@@ -28,6 +28,7 @@ npm run start
 ## Project Structure
 
 - `pages/index.js` - main page
+- `pages/calendar.js` - full-page monthly calendar with month/year navigation
 - `pages/api/hello.js` - sample API endpoint
 - `app.yaml` - Google App Engine (Flexible) deployment config
 
