@@ -11,6 +11,24 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/lib/*": [
+        "lib/*"
+      ],
+      "@/context/*": [
+        "context/*"
+      ],
+      "@/components/*": [
+        "components/*"
+      ],
+      "@/services/*": [
+        "services/*"
+      ],
+      "@/*": [
+        "*"
+      ]
+    },
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
@@ -28,9 +46,11 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.d.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next"
   ]
 }

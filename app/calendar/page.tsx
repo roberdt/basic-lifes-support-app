@@ -1,9 +1,10 @@
-import Head from 'next/head'
-import { useMemo, useState } from 'react'
-import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded'
-import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
-import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
-import TodayRoundedIcon from '@mui/icons-material/TodayRounded'
+'use client';
+
+import { useMemo, useState } from 'react';
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
+import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
 import {
   Box,
   Button,
@@ -13,8 +14,11 @@ import {
   Paper,
   Select,
   Typography,
-} from '@mui/material'
-import type { SelectChangeEvent } from '@mui/material/Select'
+} from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material/Select';
+import Pfapappbar from '@/components/pfapappbar';
+import Pfapcontainer from '@/components/pfapcontainer';
+import Pfapfooter from '@/components/pfapfooter';
 
 const MONTH_NAMES = [
   'January',
@@ -29,36 +33,36 @@ const MONTH_NAMES = [
   'October',
   'November',
   'December',
-]
+];
 
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-type EmptyCell = { type: 'empty'; key: string }
-type DayCell = { type: 'day'; key: string; day: number; isToday: boolean }
-type CalendarCell = EmptyCell | DayCell
+type EmptyCell = { type: 'empty'; key: string };
+type DayCell = { type: 'day'; key: string; day: number; isToday: boolean };
+type CalendarCell = EmptyCell | DayCell;
 
 function daysInMonth(year: number, month: number): number {
-  return new Date(year, month + 1, 0).getDate()
+  return new Date(year, month + 1, 0).getDate();
 }
 
 export default function CalendarPage() {
-  const today = useMemo(() => new Date(), [])
-  const currentYear = today.getFullYear()
-  const [viewYear, setViewYear] = useState(currentYear)
-  const [viewMonth, setViewMonth] = useState(today.getMonth())
+  const today = useMemo(() => new Date(), []);
+  const currentYear = today.getFullYear();
+  const [viewYear, setViewYear] = useState(currentYear);
+  const [viewMonth, setViewMonth] = useState(today.getMonth());
 
   const yearOptions = useMemo(
     () => Array.from({ length: 101 }, (_, index) => currentYear - 50 + index),
     [currentYear]
-  )
+  );
 
   const grid = useMemo(() => {
-    const firstDayOffset = new Date(viewYear, viewMonth, 1).getDay()
-    const totalDays = daysInMonth(viewYear, viewMonth)
-    const cells: CalendarCell[] = []
+    const firstDayOffset = new Date(viewYear, viewMonth, 1).getDay();
+    const totalDays = daysInMonth(viewYear, viewMonth);
+    const cells: CalendarCell[] = [];
 
-    for (let i = 0; i < firstDayOffset; i += 1) {
-      cells.push({ type: 'empty', key: `empty-start-${i}` })
+    for (let index = 0; index < firstDayOffset; index += 1) {
+      cells.push({ type: 'empty', key: `empty-start-${index}` });
     }
 
     for (let day = 1; day <= totalDays; day += 1) {
@@ -70,70 +74,56 @@ export default function CalendarPage() {
           day === today.getDate() &&
           viewMonth === today.getMonth() &&
           viewYear === today.getFullYear(),
-      })
+      });
     }
 
     while (cells.length < 42) {
-      cells.push({ type: 'empty', key: `empty-end-${cells.length}` })
+      cells.push({ type: 'empty', key: `empty-end-${cells.length}` });
     }
 
-    return cells
-  }, [today, viewMonth, viewYear])
+    return cells;
+  }, [today, viewMonth, viewYear]);
 
   const goPrevMonth = () => {
     if (viewMonth === 0) {
-      setViewMonth(11)
-      setViewYear((year: number) => year - 1)
-      return
+      setViewMonth(11);
+      setViewYear((year: number) => year - 1);
+      return;
     }
 
-    setViewMonth((month: number) => month - 1)
-  }
+    setViewMonth((month: number) => month - 1);
+  };
 
   const goNextMonth = () => {
     if (viewMonth === 11) {
-      setViewMonth(0)
-      setViewYear((year: number) => year + 1)
-      return
+      setViewMonth(0);
+      setViewYear((year: number) => year + 1);
+      return;
     }
 
-    setViewMonth((month: number) => month + 1)
-  }
+    setViewMonth((month: number) => month + 1);
+  };
 
   const onMonthChange = (event: SelectChangeEvent<number>) => {
-    setViewMonth(Number(event.target.value))
-  }
+    setViewMonth(Number(event.target.value));
+  };
 
   const onYearChange = (event: SelectChangeEvent<number>) => {
-    setViewYear(Number(event.target.value))
-  }
+    setViewYear(Number(event.target.value));
+  };
 
   const jumpToToday = () => {
-    setViewMonth(today.getMonth())
-    setViewYear(today.getFullYear())
-  }
+    setViewMonth(today.getMonth());
+    setViewYear(today.getFullYear());
+  };
 
   return (
-    <>
-      <Head>
-        <title>Calendar | Basic Life Support</title>
-        <meta
-          name="description"
-          content="Monthly calendar view for adding day-by-day information."
-        />
-      </Head>
-
-      <Box
-        sx={{
-          minHeight: '100vh',
-          px: { xs: 1, sm: 2 },
-          py: { xs: 1, sm: 2 },
-        }}
-      >
+    <Box>
+      <Pfapappbar />
+      <Pfapcontainer>
         <Paper
           elevation={0}
           sx={{
-            height: 'calc(100vh - 16px)',
             maxWidth: 1500,
             mx: 'auto',
             p: { xs: 1.25, sm: 2 },
@@ -235,12 +225,7 @@ export default function CalendarPage() {
               <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1 }}>
                 <FormControl size="small" sx={{ minWidth: 160 }}>
                   <InputLabel id="month-label">Month</InputLabel>
-                  <Select
-                    labelId="month-label"
-                    label="Month"
-                    value={viewMonth}
-                    onChange={onMonthChange}
-                  >
+                  <Select labelId="month-label" label="Month" value={viewMonth} onChange={onMonthChange}>
                     {MONTH_NAMES.map((monthName, index) => (
                       <MenuItem value={index} key={monthName}>
                         {monthName}
@@ -251,12 +236,7 @@ export default function CalendarPage() {
 
                 <FormControl size="small" sx={{ minWidth: 130 }}>
                   <InputLabel id="year-label">Year</InputLabel>
-                  <Select
-                    labelId="year-label"
-                    label="Year"
-                    value={viewYear}
-                    onChange={onYearChange}
-                  >
+                  <Select labelId="year-label" label="Year" value={viewYear} onChange={onYearChange}>
                     {yearOptions.map((year) => (
                       <MenuItem value={year} key={year}>
                         {year}
@@ -325,7 +305,7 @@ export default function CalendarPage() {
                         bgcolor: 'rgba(21, 101, 255, 0.02)',
                       }}
                     />
-                  )
+                  );
                 }
 
                 return (
@@ -400,12 +380,13 @@ export default function CalendarPage() {
                       </Typography>
                     </Box>
                   </Paper>
-                )
+                );
               })}
             </Box>
           </Box>
         </Paper>
-      </Box>
-    </>
-  )
+      </Pfapcontainer>
+      <Pfapfooter />
+    </Box>
+  );
 }

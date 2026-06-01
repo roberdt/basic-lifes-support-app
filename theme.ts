@@ -8,17 +8,29 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: brandBlue,
-      dark: brandBlueDark,
-      light: '#4f8cff',
-      contrastText: '#ffffff',
+      light: '#338fd3',
+      main: '#0074C8',
+      dark: '#00518c',
+      contrastText: '#fff',
     },
     secondary: {
-      main: '#4fc3f7',
-      dark: '#039be5',
-      light: '#b6ecff',
-      contrastText: '#062743',
+      light: '#ff7961',
+      main: '#f44336',
+      dark: '#ba000d',
+      contrastText: '#000',
     },
+    // primary: {
+    //   main: brandBlue,
+    //   dark: brandBlueDark,
+    //   light: '#4f8cff',
+    //   contrastText: '#ffffff',
+    // },
+    // secondary: {
+    //   main: '#4fc3f7',
+    //   dark: '#039be5',
+    //   light: '#b6ecff',
+    //   contrastText: '#062743',
+    // },
     background: {
       default: '#f4f8ff',
       paper: '#ffffff',

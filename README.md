@@ -1,6 +1,6 @@
 # Basic Life Support App
 
-This is a simple [Next.js](https://nextjs.org/) app using the Pages Router.
+This is a simple [Next.js](https://nextjs.org/) app using the App Router.
 
 ## Requirements
 
@@ -53,14 +53,14 @@ npm run typecheck
 
 ## Project Structure
 
-- `pages/index.tsx` - main page
-- `pages/_app.tsx` - global Material UI theme provider
-- `pages/login.tsx` - login screen UI
-- `pages/register.tsx` - registration/access-request form
-- `pages/calendar.tsx` - full-page monthly calendar with month/year navigation
-- `pages/api/hello.ts` - sample API endpoint
-- `pages/api/request-calendar-access.ts` - sends access request email to admin
-- `pages/api/router/[...route].ts` - lightweight dynamic API router (health, echo, calendar)
+- `app/layout.tsx` - root App Router layout
+- `app/providers.tsx` - global Material UI theme, auth, and message providers
+- `app/page.tsx` - home page
+- `app/login/page.tsx` - login screen UI
+- `app/register/page.tsx` - registration/access-request form
+- `app/calendar/page.tsx` - full-page monthly calendar with month/year navigation
+- `app/about/page.tsx` - informational about page used by the menu
+- `app/api/request-calendar-access/route.ts` - sends access request email to admin
 - `theme.ts` - shared blue Material UI theme
 - `tsconfig.json` - TypeScript compiler settings
 - `.env.example` - sample SMTP/admin email configuration
@@ -74,11 +74,8 @@ If you deploy to Google App Engine Flexible, use the existing `app.yaml` and dep
 gcloud app deploy
 ```
 
-## API Router Examples
+## Notes
 
-The dynamic API router lives at `pages/api/router/[...route].ts`.
-
-- `GET /api/router/health`
-- `POST /api/router/echo`
-- `GET /api/router/calendar/2026/6`
+- Legacy Pages Router route files were renamed to `*.old` backups under `pages/`.
+- The access-request form now posts to the App Router handler at `/api/request-calendar-access`.
 
