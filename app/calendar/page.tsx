@@ -120,7 +120,7 @@ export default function CalendarPage() {
   return (
     <Box>
       <Pfapappbar />
-      <Pfapcontainer>
+      <Pfapcontainer maxWidth="xl">
         <Paper
           elevation={0}
           sx={{
