@@ -47,11 +47,12 @@ export async function logout(): Promise<void> {
  * Defines the structure of the payload required for user registration, including username, first name, last name, email, and password
  **************************************************/
 export interface RegisterPayload {
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
+  fullname: string;
+  emailAddress: string;
+  companyName: string;
   password: string;
+  verifyPassword?: string;
+  purpose: string;
 }
 
 /**************************************************
@@ -71,7 +72,7 @@ interface RegisterResponse {
  * Throws an error with a message if the registration fails
  **************************************************/
 export async function register(payload: RegisterPayload): Promise<RegisterResponse> {
-  const { ok, data } = await apiFetch<RegisterResponse>('/auth/register', {
+  const { ok, data } = await apiFetch<RegisterResponse>('/api/register', {
     method: 'POST',
     body: payload,
   });

@@ -18,7 +18,7 @@ export async function logout() {
 export async function register(payload) {
   // POST to /api/register to match backend mapping
   // Payload should be: { username, firstName, lastName, email, password }
-  const { ok, data } = await apiFetch('/auth/register', { method: 'POST', body: payload });
+  const { ok, data } = await apiFetch('/api/register', { method: 'POST', body: payload });
   if (!ok) throw new Error(data?.message || 'Registration failed');
   return data;
 }

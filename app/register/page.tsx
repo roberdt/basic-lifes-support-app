@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import type { ChangeEvent, FormEvent } from 'react';
 import { useState } from 'react';
 import {
@@ -16,12 +17,15 @@ import { useMessage } from '@/context/MessageContext';
 import Pfapappbar from '@/components/pfapappbar';
 import Pfapcontainer from '@/components/pfapcontainer';
 import Pfapfooter from '@/components/pfapfooter';
+import { register } from '@/services/auth';
 
 type RegisterForm = {
-  fullName: string;
-  email: string;
-  organization: string;
-  reason: string;
+  fullname: string;
+  emailAddress: string;
+  companyName: string;
+  password: string;
+  verifyPassword: string;
+  purpose: string;
 };
 
 type RegisterErrors = Partial<Record<keyof RegisterForm, string>>;
@@ -32,26 +36,50 @@ type ApiResponse = {
 };
 
 const initialForm: RegisterForm = {
-  fullName: '',
-  email: '',
-  organization: '',
-  reason: '',
+  fullname: '',
+  emailAddress: '',
+  companyName: '',
+  password: '',
+  verifyPassword: '',
+  purpose: '',
 };
 
 function validate(form: RegisterForm): RegisterErrors {
   const errors: RegisterErrors = {};
 
-  if (!form.fullName.trim()) errors.fullName = 'Full name is required.';
-  if (!form.email.trim()) errors.email = 'Email is required.';
-  if (!form.organization.trim()) errors.organization = 'Organization is required.';
-  if (form.reason.trim().length < 10) {
-    errors.reason = 'Please provide a short reason (at least 10 characters).';
+  if (!form.fullname.trim()) errors.fullname = 'Full name is required.';
+
+  if (!form.emailAddress.trim()) {
+    errors.emailAddress = 'Email is required.';
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.emailAddress.trim())) {
+    errors.emailAddress = 'Enter a valid email address.';
+  }
+
+  if (!form.companyName.trim()) errors.companyName = 'Organization/ Company is required.';
+
+  const password = form.password || '';
+  if (!password) {
+    errors.password = 'Password is required.';
+  } else if (password.length < 8 || !/[#$&]/.test(password)) {
+    errors.password = 'Password must be 8 characters or greater and contain #, $, or &.';
+  }
+
+  const verifyPassword = form.verifyPassword || '';
+  if (!verifyPassword) {
+    errors.verifyPassword = 'Please verify your password.';
+  } else if (password !== verifyPassword) {
+    errors.verifyPassword = 'Passwords do not match.';
+  }
+
+  if (form.purpose.trim().length < 10) {
+    errors.purpose = 'Please provide a short reason (at least 10 characters).';
   }
 
   return errors;
 }
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState<RegisterErrors>({});
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -71,10 +99,12 @@ export default function RegisterPage() {
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
       setMessage(
-        nextErrors.fullName ||
-          nextErrors.email ||
-          nextErrors.organization ||
-          nextErrors.reason ||
+        nextErrors.fullname ||
+          nextErrors.emailAddress ||
+          nextErrors.companyName ||
+          nextErrors.password ||
+          nextErrors.verifyPassword ||
+          nextErrors.purpose ||
           'Please fix the highlighted fields.',
         'error'
       );
@@ -84,28 +114,28 @@ export default function RegisterPage() {
     setStatus('loading');
 
     try {
-      const response = await fetch('/api/request-calendar-access', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+      const payload = await register({
+        fullname: form.fullname.trim(),
+        emailAddress: form.emailAddress.trim(),
+        companyName: form.companyName.trim(),
+        password: form.password,
+        verifyPassword: form.verifyPassword,
+        purpose: form.purpose.trim(),
       });
-
-      const payload: ApiResponse = await response.json();
-
-      if (!response.ok) {
-        setStatus('error');
-        setErrors(payload.errors || {});
-        setMessage(payload.message || 'Unable to submit request.', 'error');
-        return;
-      }
 
       setStatus('success');
       setForm(initialForm);
       setErrors({});
-      setMessage(payload.message || 'Request sent successfully.', 'success');
-    } catch {
+      setMessage(payload.message || 'Registration successful. Please allow 2 business days for approval.', 'success');
+      router.push('/');
+    } catch (err) {
       setStatus('error');
-      setMessage('Network error. Please try again.', 'error');
+      console.error('Registration error', err);
+      if (err instanceof TypeError && err.message === 'Failed to fetch') {
+        setMessage('Failed to connect to the backend server. Please make sure your backend API is running and CORS is enabled.', 'error');
+      } else {
+        setMessage(err instanceof Error ? err.message : 'Registration failed. Please try again.', 'error');
+      }
     }
   };
 
@@ -136,46 +166,70 @@ export default function RegisterPage() {
               </Box>
 
               <TextField
-                name="fullName"
+                name="fullname"
                 label="Full name"
-                value={form.fullName}
+                value={form.fullname}
                 onChange={onChange}
-                error={Boolean(errors.fullName)}
-                helperText={errors.fullName || ''}
+                error={Boolean(errors.fullname)}
+                helperText={errors.fullname || ''}
                 required
                 fullWidth
               />
 
               <TextField
-                name="email"
+                name="emailAddress"
                 type="email"
                 label="Email"
-                value={form.email}
+                value={form.emailAddress}
                 onChange={onChange}
-                error={Boolean(errors.email)}
-                helperText={errors.email || ''}
+                error={Boolean(errors.emailAddress)}
+                helperText={errors.emailAddress || ''}
                 required
                 fullWidth
               />
 
               <TextField
-                name="organization"
-                label="Organization"
-                value={form.organization}
+                name="companyName"
+                label="Organization/ Company"
+                value={form.companyName}
                 onChange={onChange}
-                error={Boolean(errors.organization)}
-                helperText={errors.organization || ''}
+                error={Boolean(errors.companyName)}
+                helperText={errors.companyName || ''}
                 required
                 fullWidth
               />
 
               <TextField
-                name="reason"
+                name="password"
+                type="password"
+                label="Password"
+                value={form.password}
+                onChange={onChange}
+                error={Boolean(errors.password)}
+                helperText={errors.password || 'Password must be 8 characters or greater and contain #, $, or &.'}
+                required
+                fullWidth
+              />
+
+              <TextField
+                name="verifyPassword"
+                type="password"
+                label="Verify Password"
+                value={form.verifyPassword}
+                onChange={onChange}
+                error={Boolean(errors.verifyPassword)}
+                helperText={errors.verifyPassword || ''}
+                required
+                fullWidth
+              />
+
+              <TextField
+                name="purpose"
                 label="Why do you need access?"
-                value={form.reason}
+                value={form.purpose}
                 onChange={onChange}
-                error={Boolean(errors.reason)}
-                helperText={errors.reason || 'Include role/use case so admin can approve quickly.'}
+                error={Boolean(errors.purpose)}
+                helperText={errors.purpose || 'Include role/use case so admin can approve quickly.'}
                 required
                 multiline
                 minRows={4}
@@ -191,7 +245,7 @@ export default function RegisterPage() {
                   status === 'loading' ? <CircularProgress size={18} color="inherit" /> : null
                 }
               >
-                {status === 'loading' ? 'Sending request...' : 'Send access request'}
+                {status === 'loading' ? 'Registering...' : 'Register'}
               </Button>
 
               <Typography variant="body2" color="text.secondary">

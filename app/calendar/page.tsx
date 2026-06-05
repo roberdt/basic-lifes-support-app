@@ -155,6 +155,10 @@ export default function CalendarPage() {
                 gap: 1.25,
               }}
             >
+                <br />
+                <br />
+                <br />
+                <br />
               <Box
                 sx={{
                   width: 52,
@@ -167,7 +171,9 @@ export default function CalendarPage() {
                   boxShadow: '0 14px 30px rgba(21, 101, 255, 0.25)',
                 }}
               >
-                <CalendarMonthRoundedIcon />
+
+                  <CalendarMonthRoundedIcon />
+
               </Box>
               <Box>
                 <Typography variant="h4">BLS Calendar Planner</Typography>
@@ -176,7 +182,10 @@ export default function CalendarPage() {
                 </Typography>
               </Box>
             </Box>
-
+              <br />
+              <br />
+              <br />
+              <br />
             <Button
               variant="outlined"
               color="primary"
