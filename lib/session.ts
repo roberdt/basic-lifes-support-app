@@ -1,10 +1,7 @@
-/**************************************************
- * Session()
- * Defines the structure of a user session, including the JWT, user ID, and expiration timestamp.
- **************************************************/
 export interface Session {
   jwt: string;
   userId: string;
+  companyName?: string;
   expiresAt: number;
 }
 
@@ -16,10 +13,11 @@ const THIRTY_MINUTES = 30 * 60 * 1000;
  * Constructs a new session object with the provided JWT and user ID.
  * Sets the expiresAt timestamp to 30 minutes from the current time.
  **************************************************/
-export function createSession(jwt: string, userId: string): Session {
+export function createSession(jwt: string, userId: string, companyName?: string): Session {
   return {
     jwt,
     userId,
+    companyName,
     expiresAt: Date.now() + THIRTY_MINUTES,
   };
 }

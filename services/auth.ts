@@ -21,14 +21,32 @@ interface LoginResponse {
  * Returns a Promise that resolves to a LoginResponse object containing the token and user info on success
  * Throws an error with a message if the login fails
  **************************************************/
-export async function login(username: string, password: string): Promise<LoginResponse> {
-  const { ok, status, data } = await apiFetch<LoginResponse>('/auth/login', {
+export async function login(
+  username: string,
+  password: string,
+  recaptchaToken: string,
+  companyId?: string,
+  companyName?: string
+): Promise<LoginResponse> {
+  const res = await fetch('/api/auth/login', {
     method: 'POST',
-    body: { username, password },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      username,
+      password,
+      recaptchaToken,
+      ...(companyId ? { companyId } : {}),
+      ...(companyName ? { companyName } : {})
+    }),
   });
 
-  if (!ok) {
-    throw new Error((data as LoginResponse)?.message || `Login failed (${status})`);
+  const contentType = res.headers.get('content-type') || '';
+  const data = contentType.includes('application/json') ? await res.json() : await res.text();
+
+  if (!res.ok) {
+    throw new Error((data as LoginResponse)?.message || `Login failed (${res.status})`);
   }
   return data as LoginResponse;
 }
@@ -47,6 +65,7 @@ export async function logout(): Promise<void> {
  * Defines the structure of the payload required for user registration, including username, first name, last name, email, and password
  **************************************************/
 export interface RegisterPayload {
+  username: string;
   fullname: string;
   emailAddress: string;
   companyName: string;

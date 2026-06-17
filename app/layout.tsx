@@ -22,6 +22,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
           src="https://www.googletagmanager.com/gtag/js?id=G-YGM5LC8RZW"
           strategy="afterInteractive"
         />
+        {/* Google reCAPTCHA v2 */}
+        <Script
+          src="https://www.google.com/recaptcha/api.js"
+          strategy="afterInteractive"
+        />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];

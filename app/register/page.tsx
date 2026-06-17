@@ -20,6 +20,7 @@ import Pfapfooter from '@/components/pfapfooter';
 import { register } from '@/services/auth';
 
 type RegisterForm = {
+  username: string;
   fullname: string;
   emailAddress: string;
   companyName: string;
@@ -36,6 +37,7 @@ type ApiResponse = {
 };
 
 const initialForm: RegisterForm = {
+  username: '',
   fullname: '',
   emailAddress: '',
   companyName: '',
@@ -46,6 +48,12 @@ const initialForm: RegisterForm = {
 
 function validate(form: RegisterForm): RegisterErrors {
   const errors: RegisterErrors = {};
+
+  if (!form.username.trim()) {
+    errors.username = 'Username is required.';
+  } else if (form.username.trim().toLowerCase() === form.fullname.trim().toLowerCase()) {
+    errors.username = 'User Name cannot be the same as your Full Name.';
+  }
 
   if (!form.fullname.trim()) errors.fullname = 'Full name is required.';
 
@@ -100,6 +108,7 @@ export default function RegisterPage() {
       setErrors(nextErrors);
       setMessage(
         nextErrors.fullname ||
+          nextErrors.username ||
           nextErrors.emailAddress ||
           nextErrors.companyName ||
           nextErrors.password ||
@@ -115,6 +124,7 @@ export default function RegisterPage() {
 
     try {
       const payload = await register({
+        username: form.username.trim(),
         fullname: form.fullname.trim(),
         emailAddress: form.emailAddress.trim(),
         companyName: form.companyName.trim(),
@@ -172,6 +182,17 @@ export default function RegisterPage() {
                 onChange={onChange}
                 error={Boolean(errors.fullname)}
                 helperText={errors.fullname || ''}
+                required
+                fullWidth
+              />
+
+              <TextField
+                name="username"
+                label="User Name"
+                value={form.username}
+                onChange={onChange}
+                error={Boolean(errors.username)}
+                helperText={errors.username || 'Unique login user name.'}
                 required
                 fullWidth
               />

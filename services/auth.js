@@ -1,12 +1,18 @@
 import { apiFetch, setToken } from '../lib/api';
 
-export async function login(username, password) {
-  // Send friendly field names expected by the backend
-  const { ok, status, data } = await apiFetch('/auth/login', { method: 'POST', body: { username, password } });
-  if (!ok) {
-    throw new Error(data?.message || `Login failed (${status})`);
+export async function login(username, password, recaptchaToken) {
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ username, password, recaptchaToken }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data?.message || `Login failed (${res.status})`);
   }
-  // Assume backend returns { token, user }
   if (data.token) setToken(data.token);
   return data;
 }

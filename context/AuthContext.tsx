@@ -38,7 +38,14 @@ interface LoginData {
 interface AuthContextValue {
   session: Session | null;
   userId: string | null;
-  login: (identifier: string, password: string) => Promise<LoginData>;
+  companyName: string | null;
+  login: (
+    identifier: string,
+    password: string,
+    recaptchaToken: string,
+    companyId?: string,
+    companyName?: string
+  ) => Promise<LoginData>;
   logout: () => void;
   loading: boolean;
 }
@@ -89,10 +96,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => window.clearTimeout(timeout);
   }, [session]);
 
-  const login = (identifier: string, password: string): Promise<LoginData> => {
+  const login = (
+    identifier: string,
+    password: string,
+    recaptchaToken: string,
+    companyId?: string,
+    companyName?: string
+  ): Promise<LoginData> => {
     setLoading(true);
     return authService
-      .login(identifier, password)
+      .login(identifier, password, recaptchaToken, companyId, companyName)
       .then((data) => {
         const jwt = data.token;
         if (!jwt) {
@@ -108,7 +121,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           data.username ||
           identifier;
 
-        const nextSession = createSession(jwt, userId);
+        let compName =
+          (data.user?.companyName as string) ||
+          (data.companyName as string) ||
+          (data.user?.company as string) ||
+          (data.company as string) ||
+          companyName || // Fallback to user-selected company name
+          '';
+
+        if (!compName && userId === 'user') {
+          compName = 'fredflintstone.com';
+        }
+
+        if (!compName && userId === 'Admin') {
+          compName = 'Super User';
+        }
+
+        const nextSession = createSession(jwt, userId, compName);
         saveSession(nextSession);
         setSession(nextSession);
         return data;
@@ -125,7 +154,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ session, userId: session?.userId ?? null, login, logout, loading }}>
+    <AuthContext.Provider value={{
+      session,
+      userId: session?.userId ?? null,
+      companyName: session?.companyName || (session?.userId === 'Admin' ? 'Super User' : null),
+      login,
+      logout,
+      loading
+    }}>
       {children}
     </AuthContext.Provider>
   );
