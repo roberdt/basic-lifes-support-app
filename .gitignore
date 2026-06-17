@@ -43,4 +43,5 @@ yarn-error.log*
 ,idea\workspace.xml
 
 basiclifesupport.iml
+theme.js
 
