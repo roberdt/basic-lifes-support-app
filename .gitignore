@@ -24,8 +24,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-C:\workspace\intellijProjects\basic-lifes-support-app\.env
-C:\workspace\intellijProjects\basic-lifes-support-app\.env.example
+.env
+.env.example
 .env.local
 .env.development.local
 .env.test.local
