@@ -524,10 +524,16 @@ export default function HomePage() {
                           </Avatar>
                         </ListItemAvatar>
                         <ListItemText
-                          primary={log.message}
-                          secondary={log.time}
-                          primaryTypographyProps={{ variant: 'body2', fontWeight: 500, color: '#334155' }}
-                          secondaryTypographyProps={{ variant: 'caption', color: '#94a3b8' }}
+                          primary={
+                            <Typography variant="body2" sx={{ fontWeight: 500, color: '#334155' }}>
+                              {log.message}
+                            </Typography>
+                          }
+                          secondary={
+                            <Typography variant="caption" sx={{ color: '#94a3b8' }}>
+                              {log.time}
+                            </Typography>
+                          }
                         />
                       </ListItem>
                       {index < activityLogs.length - 1 && <Divider component="li" variant="inset" sx={{ ml: 4, borderColor: '#f1f5f9' }} />}
