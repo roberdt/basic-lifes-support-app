@@ -170,8 +170,8 @@ export default function ClassesListPage() {
 
   const sortedClasses = useMemo(() => {
     return [...classes].sort((a, b) => {
-      const aValue = a[orderBy];
-      const bValue = b[orderBy];
+      const aValue = a[orderBy] ?? '';
+      const bValue = b[orderBy] ?? '';
 
       if (aValue < bValue) {
         return order === 'asc' ? -1 : 1;

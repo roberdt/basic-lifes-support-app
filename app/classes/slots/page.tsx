@@ -76,6 +76,7 @@ interface ClassDetails {
   starttime: string;
   endtime: string;
   instructorname: string;
+  notes?: string;
 }
 
 function SlotsManagementContent() {
@@ -85,7 +86,7 @@ function SlotsManagementContent() {
   const companyId = searchParams.get('companyId');
   const dateId = searchParams.get('dateId');
 
-  const { userId, authLoading } = useAuth();
+  const { userId, loading: authLoading } = useAuth();
   const { setMessage } = useMessage();
 
   const [loading, setLoading] = useState(true);
@@ -166,7 +167,7 @@ function SlotsManagementContent() {
       });
       
       if (addRes.ok) {
-        const newSlotId = addRes.data.id;
+        const newSlotId = (addRes.data as any)?.id;
         // 2. Immediately update it with student info
         const updateRes = await apiFetch(`/api/companies/${companyId}/dates/${dateId}/times/${timeId}/classslots/update`, {
           method: 'PUT',
@@ -288,9 +289,9 @@ function SlotsManagementContent() {
       });
       if (res.ok) {
         setSnackbar({ open: true, message: 'New blank slot added', severity: 'success' });
-        const newSlot = res.data; // Assuming it returns the new slot object
-        setSlots(prev => [...prev, newSlot].sort((a, b) => a.id.localeCompare(b.id)));
-        setOriginalSlots(prev => [...prev, JSON.parse(JSON.stringify(newSlot))].sort((a, b) => a.id.localeCompare(b.id)));
+        const newSlot = res.data as ClassSlot;
+        setSlots(prev => [...prev, newSlot].sort((a: ClassSlot, b: ClassSlot) => (a.id || '').localeCompare(b.id || '')));
+        setOriginalSlots(prev => [...prev, JSON.parse(JSON.stringify(newSlot))].sort((a: ClassSlot, b: ClassSlot) => (a.id || '').localeCompare(b.id || '')));
       } else {
         throw new Error('Failed to add slot');
       }
