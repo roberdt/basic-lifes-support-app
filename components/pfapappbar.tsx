@@ -17,7 +17,7 @@ function Pfapappbar() {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ width: '100%' }}>
       <AppBar position="static">
         <Toolbar>
           {/* Top Left: Menu bar button & App Title */}

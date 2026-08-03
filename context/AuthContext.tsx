@@ -39,6 +39,7 @@ interface AuthContextValue {
   session: Session | null;
   userId: string | null;
   companyName: string | null;
+  companyId: string | null;
   login: (
     identifier: string,
     password: string,
@@ -137,7 +138,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           compName = 'Super User';
         }
 
-        const nextSession = createSession(jwt, userId, compName);
+        const nextSession = createSession(jwt, userId, compName, data.companyId as string);
         saveSession(nextSession);
         setSession(nextSession);
         return data;
@@ -158,6 +159,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       session,
       userId: session?.userId ?? null,
       companyName: session?.companyName || (session?.userId === 'Admin' ? 'Super User' : null),
+      companyId: session?.companyId ?? null,
       login,
       logout,
       loading

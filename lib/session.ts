@@ -1,6 +1,7 @@
 export interface Session {
   jwt: string;
   userId: string;
+  companyId?: string;
   companyName?: string;
   expiresAt: number;
 }
@@ -13,10 +14,11 @@ const THIRTY_MINUTES = 30 * 60 * 1000;
  * Constructs a new session object with the provided JWT and user ID.
  * Sets the expiresAt timestamp to 30 minutes from the current time.
  **************************************************/
-export function createSession(jwt: string, userId: string, companyName?: string): Session {
+export function createSession(jwt: string, userId: string, companyName?: string, companyId?: string): Session {
   return {
     jwt,
     userId,
+    companyId,
     companyName,
     expiresAt: Date.now() + THIRTY_MINUTES,
   };

@@ -34,13 +34,22 @@ export async function POST(request: Request) {
     params.append('secret', secretKey);
     params.append('response', recaptchaToken);
 
-    const siteVerifyRes = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: params.toString(),
-    });
+    let siteVerifyRes;
+    try {
+      siteVerifyRes = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(),
+      });
+    } catch (err: any) {
+      console.error('reCAPTCHA fetch failed:', err);
+      return NextResponse.json(
+        { message: 'Unable to connect to Google reCAPTCHA service.' },
+        { status: 502 }
+      );
+    }
 
     if (!siteVerifyRes.ok) {
       return NextResponse.json(
@@ -65,7 +74,7 @@ export async function POST(request: Request) {
 
     if (username === superUserName && password === superUserPassword) {
       try {
-        const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8080';
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://127.0.0.1:8080';
         const backendRes = await fetch(`${apiBase}/api/authenticate`, {
           method: 'POST',
           headers: {
@@ -109,25 +118,34 @@ export async function POST(request: Request) {
     }
 
     // 2. Forward the login request to the Tomcat backend
-    const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8080';
+    const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://127.0.0.1:8080';
     // Use the new endpoint if companyName is provided, otherwise fall back to standard /api/authenticate
     const tomcatLoginUrl = companyName
       ? `${apiBase}/api/authenticate-by-company-name`
       : `${apiBase}/api/authenticate`;
 
-    const backendRes = await fetch(tomcatLoginUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username,
-        password,
-        ...(companyId ? { companyId } : {}),
-        ...(companyName ? { companyName } : {}),
-        ...(companyName ? { company: companyName } : {})
-      }),
-    });
+    let backendRes;
+    try {
+      backendRes = await fetch(tomcatLoginUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          password,
+          ...(companyId ? { companyId } : {}),
+          ...(companyName ? { companyName } : {}),
+          ...(companyName ? { company: companyName } : {})
+        }),
+      });
+    } catch (err: any) {
+      console.error('Backend fetch failed:', err);
+      return NextResponse.json(
+        { message: `Unable to connect to backend server at ${tomcatLoginUrl}. Is it running?` },
+        { status: 504 }
+      );
+    }
 
     const contentType = backendRes.headers.get('content-type') || '';
     const responseData = contentType.includes('application/json')

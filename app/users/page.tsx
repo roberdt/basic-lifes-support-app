@@ -355,69 +355,70 @@ export default function UsersPage() {
     return (
       <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
         <Pfapappbar />
-        <Pfapcontainer maxWidth="sm">
-          <Paper
-            elevation={3}
-            sx={{
-              p: 5,
-              textAlign: 'center',
-              border: '2px solid #c62828',
-              borderRadius: '12px',
-              backgroundColor: '#ffffff',
-              boxShadow: '0 8px 32px rgba(198, 40, 40, 0.08)',
-              mt: 8,
-              mb: 8,
-            }}
-          >
-            <Box
+        <Box sx={{ flex: 1, pb: 12 }}>
+          <Pfapcontainer maxWidth="sm">
+            <Paper
+              elevation={3}
               sx={{
-                display: 'inline-flex',
-                p: 2,
-                borderRadius: '50%',
-                backgroundColor: '#ffebee',
-                color: '#c62828',
-                mb: 3,
+                p: 5,
+                textAlign: 'center',
+                border: '2px solid #c62828',
+                borderRadius: '12px',
+                backgroundColor: '#ffffff',
+                boxShadow: '0 8px 32px rgba(198, 40, 40, 0.08)',
+                mt: 4,
               }}
             >
-              <LockIcon sx={{ fontSize: 48 }} />
-            </Box>
-            <Typography variant="h5" sx={{ fontWeight: 700, color: '#c62828', mb: 2 }}>
-              Access Denied
-            </Typography>
-            <Typography variant="body1" sx={{ color: '#555555', mb: 4, lineHeight: 1.6 }}>
-              The screen you are trying to view is restricted to Super User administrators.
-              Please log in with the Super User account to manage company users.
-            </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
-              <Button
-                variant="outlined"
-                onClick={() => router.push('/')}
+              <Box
                 sx={{
-                  color: '#0074C8',
-                  borderColor: '#0074C8',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  '&:hover': { borderColor: '#00518c', backgroundColor: 'rgba(0, 116, 200, 0.04)' },
+                  display: 'inline-flex',
+                  p: 2,
+                  borderRadius: '50%',
+                  backgroundColor: '#ffebee',
+                  color: '#c62828',
+                  mb: 3,
                 }}
               >
-                Go Home
-              </Button>
-              <Button
-                variant="contained"
-                onClick={() => router.push('/login')}
-                sx={{
-                  backgroundColor: '#0074C8',
-                  color: '#ffffff',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  '&:hover': { backgroundColor: '#00518c' },
-                }}
-              >
-                Log In
-              </Button>
-            </Box>
-          </Paper>
-        </Pfapcontainer>
+                <LockIcon sx={{ fontSize: 48 }} />
+              </Box>
+              <Typography variant="h5" sx={{ fontWeight: 700, color: '#c62828', mb: 2 }}>
+                Access Denied
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#555555', mb: 4, lineHeight: 1.6 }}>
+                The screen you are trying to view is restricted to Super User administrators.
+                Please log in with the Super User account to manage company users.
+              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+                <Button
+                  variant="outlined"
+                  onClick={() => router.push('/')}
+                  sx={{
+                    color: '#0074C8',
+                    borderColor: '#0074C8',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    '&:hover': { borderColor: '#00518c', backgroundColor: 'rgba(0, 116, 200, 0.04)' },
+                  }}
+                >
+                  Go Home
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => router.push('/login')}
+                  sx={{
+                    backgroundColor: '#0074C8',
+                    color: '#ffffff',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    '&:hover': { backgroundColor: '#00518c' },
+                  }}
+                >
+                  Log In
+                </Button>
+              </Box>
+            </Paper>
+          </Pfapcontainer>
+        </Box>
         <Pfapfooter />
       </Box>
     );

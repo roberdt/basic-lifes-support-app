@@ -506,7 +506,7 @@ export default function HomePage() {
                 <List sx={{ p: 0 }}>
                   {activityLogs.map((log, index) => (
                     <React.Fragment key={log.id}>
-                      <ListItem alignItems="flex-start" sx={{ px: 0, py: 1.5 }}>
+                      <ListItem sx={{ px: 0, py: 1.5, alignItems: 'flex-start' }}>
                         <ListItemAvatar sx={{ minWidth: 44 }}>
                           <Avatar sx={{
                             width: 32,

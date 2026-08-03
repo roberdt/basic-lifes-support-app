@@ -23,34 +23,23 @@ export default function Pfapmenulist() {
     setAnchorEl(null);
   };
 
-  // Dynamically check if logged-in user's company is ACTIVE ('Yes')
+  // Dynamically check if logged-in user is ACTIVE (Admin always active, others simplified)
   useEffect(() => {
     if (!userId) {
       setIsCompanyActive(false);
       return;
     }
 
+    // Admin is always active and the only one who can access /api/companies
+    // but we don't need to call it here just to set isCompanyActive.
     if (userId === 'Admin') {
       setIsCompanyActive(true);
       return;
     }
 
-    // Fetch the companies database to verify live status
-    apiFetch<any[]>('/api/companies')
-      .then(({ ok, data }) => {
-        if (!ok) throw new Error('Failed to fetch');
-        const company = data.find(
-          (c) =>
-            c.name.toLowerCase() === companyName?.toLowerCase() ||
-            (companyName?.toLowerCase().includes('fred') && c.name.toLowerCase().includes('fred'))
-        );
-        setIsCompanyActive(company?.approval === 'Yes');
-      })
-      .catch((err) => {
-        console.error('Error verifying company status:', err);
-        setIsCompanyActive(false);
-      });
-  }, [userId, companyName]);
+    // For regular users, we bypass the /api/companies check here as requested
+    setIsCompanyActive(true);
+  }, [userId]);
 
   const divStyle: React.CSSProperties = {
     color: '#00518c',
@@ -60,7 +49,7 @@ export default function Pfapmenulist() {
   const handleDateSlotsClick = () => {
     handleClose();
     if (isCompanyActive) {
-      router.push('/classes/create');
+      router.push('/classes');
     } else {
       if (!userId) {
         setMessage('Please sign in to access the Date and Time / Slots page.', 'error');
@@ -131,6 +120,12 @@ export default function Pfapmenulist() {
               <>
                 <MenuItem onClick={handleDateSlotsClick}>
                   <span style={divStyle}>Date and Time/ Slots</span>
+                </MenuItem>
+                <MenuItem onClick={() => { handleClose(); router.push('/instructors'); }}>
+                  <span style={divStyle}>Instructors</span>
+                </MenuItem>
+                <MenuItem onClick={() => { handleClose(); router.push('/courses'); }}>
+                  <span style={divStyle}>Courses</span>
                 </MenuItem>
                 <Divider sx={{ my: 0.5 }} />
               </>
