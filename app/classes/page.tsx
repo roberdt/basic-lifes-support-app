@@ -65,10 +65,10 @@ export default function ClassesListPage() {
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Access control: Redirect Admins to home
+  // Access control: Redirect unauthenticated users
   useEffect(() => {
-    if (!authLoading && userId === 'Admin') {
-      router.push('/');
+    if (!authLoading && !userId) {
+      router.push('/login');
     }
   }, [userId, authLoading, router]);
 
@@ -84,20 +84,18 @@ export default function ClassesListPage() {
       setLoadingCompanies(true);
       try {
         const { ok, data } = await apiFetch<any[]>('/api/companies');
-        if (ok) {
+        if (ok && data) {
           setCompanies(data);
           
-          // Use the companyId directly from the auth context if it exists
-          if (companyId) {
+          if (companyId && userId !== 'Admin') {
             setSelectedCompanyId(companyId);
-          } else if (companyName) {
-            // Fallback to name matching if ID is missing from session
-            const userComp = data.find(
+          } else if (data.length > 0) {
+            const matched = companyName ? data.find(
               (c) =>
                 c.name.toLowerCase() === companyName.toLowerCase() ||
                 (companyName.toLowerCase().includes('fred') && c.name.toLowerCase().includes('fred'))
-            );
-            if (userComp) setSelectedCompanyId(userComp.id);
+            ) : null;
+            setSelectedCompanyId(matched ? matched.id : data[0].id);
           }
         }
       } catch (err) {
@@ -195,9 +193,9 @@ export default function ClassesListPage() {
     );
   }
 
-  // Access guard: Must be logged in and NOT an Admin
-  if (!userId || userId === 'Admin') {
-    return null; // Will redirect via useEffect
+  // Access guard: Must be logged in
+  if (!userId) {
+    return null;
   }
 
   return (
@@ -218,7 +216,7 @@ export default function ClassesListPage() {
               <Button
                 variant="contained"
                 startIcon={<AddCircleRoundedIcon />}
-                onClick={() => router.push('/classes/create')}
+                onClick={() => router.push(`/classes/create?companyId=${selectedCompanyId}`)}
                 sx={{
                   backgroundColor: '#0074C8',
                   color: '#ffffff',
@@ -233,21 +231,39 @@ export default function ClassesListPage() {
               </Button>
             </Box>
 
-            <Paper elevation={0} sx={{ p: 2.5, borderRadius: '12px', border: '1px solid #e0e0e0', backgroundColor: '#ffffff', mb: 3, maxWidth: 400 }}>
-              <TextField
-                label="Hosting Company"
-                value={companyName || ''}
-                disabled
-                fullWidth
-                variant="outlined"
-                size="small"
-                slotProps={{
-                  input: {
-                    sx: { fontWeight: 600, color: '#333' }
-                  }
-                }}
-              />
-            </Paper>
+            {userId === 'Admin' ? (
+              <FormControl size="small" sx={{ mb: 3, minWidth: 280 }}>
+                <InputLabel id="classes-company-select-label">Company View</InputLabel>
+                <Select
+                  labelId="classes-company-select-label"
+                  value={selectedCompanyId}
+                  label="Company View"
+                  onChange={(e) => setSelectedCompanyId(e.target.value)}
+                >
+                  {companies.map((c) => (
+                    <MenuItem key={c.id} value={c.id}>
+                      {c.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : (
+              <Paper elevation={0} sx={{ p: 2.5, borderRadius: '12px', border: '1px solid #e0e0e0', backgroundColor: '#ffffff', mb: 3, maxWidth: 400 }}>
+                <TextField
+                  label="Hosting Company"
+                  value={companies.find(c => c.id === selectedCompanyId)?.name || companyName || ''}
+                  disabled
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  slotProps={{
+                    input: {
+                      sx: { fontWeight: 600, color: '#333' }
+                    }
+                  }}
+                />
+              </Paper>
+            )}
           </Box>
 
 

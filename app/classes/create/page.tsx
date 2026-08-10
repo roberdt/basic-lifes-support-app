@@ -147,10 +147,10 @@ function CreateClassForm() {
     return slots;
   }, []);
 
-  // Access control: Redirect Admins to home
+  // Access control: Redirect unauthenticated users
   useEffect(() => {
-    if (!authLoading && (userId === 'Admin' || !userId)) {
-      router.push('/');
+    if (!authLoading && !userId) {
+      router.push('/login');
     }
   }, [userId, authLoading, router]);
 
@@ -176,7 +176,13 @@ function CreateClassForm() {
                 c.name.toLowerCase() === companyName.toLowerCase() ||
                 (companyName.toLowerCase().includes('fred') && c.name.toLowerCase().includes('fred'))
             );
-            if (matched) setResolvedCompanyId(matched.id);
+            if (matched) {
+              setResolvedCompanyId(matched.id);
+            } else if (data.length > 0) {
+              setResolvedCompanyId(data[0].id);
+            }
+          } else if (data.length > 0) {
+            setResolvedCompanyId(data[0].id);
           }
         }
       })
@@ -535,6 +541,7 @@ function CreateClassForm() {
         let resolvedDateId = effectiveDateId;
 
         if (!resolvedDateId) {
+          const firstBlockSlots = Number(timeBlocks[0].slots) || 1;
           const dateRes = await apiFetch<any>(`/api/companies/${effectiveCompanyId}/dates`, {
             method: 'POST',
             body: {
@@ -545,13 +552,16 @@ function CreateClassForm() {
               coursetitle: timeBlocks[0].coursetitle,
               coursetype: timeBlocks[0].coursetype,
               instructorname: timeBlocks[0].instructorname,
-              numberslots: 0,
-              classslots: 0,
+              numberslots: firstBlockSlots,
+              classslots: firstBlockSlots,
               approved: timeBlocks[0].approved === 'Yes',
             },
           });
 
-          if (!dateRes.ok) throw new Error('Failed to create class date');
+          if (!dateRes.ok) {
+            const errMsg = typeof dateRes.data === 'string' ? dateRes.data : (dateRes.data?.message || JSON.stringify(dateRes.data));
+            throw new Error(`Failed to create class date: ${errMsg}`);
+          }
           resolvedDateId = dateRes.data.dateId || dateRes.data.id;
         }
 
@@ -559,6 +569,7 @@ function CreateClassForm() {
         const startIdx = effectiveDateId ? 0 : 1;
         for (let i = startIdx; i < timeBlocks.length; i++) {
           const b = timeBlocks[i];
+          const bSlots = Number(b.slots) || 1;
           const tRes = await apiFetch<any>(`/api/companies/${effectiveCompanyId}/dates/${resolvedDateId}/times`, {
             method: 'POST',
             body: {
@@ -568,16 +579,18 @@ function CreateClassForm() {
               coursetype: b.coursetype,
               instructorname: b.instructorname,
               approved: b.approved === 'Yes',
-              numberslots: 0,
-              classslots: 0,
+              numberslots: bSlots,
+              classslots: bSlots,
             },
           });
           if (tRes.ok) {
             const timeId = tRes.data.timeId || tRes.data.id;
-            for (let j = 0; j < Number(b.slots); j++) {
-              await apiFetch(`/api/companies/${effectiveCompanyId}/dates/${resolvedDateId}/times/${timeId}/classslots`, {
-                method: 'POST'
-              });
+            if (!tRes.data.classSlots || tRes.data.classSlots.length === 0) {
+              for (let j = 0; j < bSlots; j++) {
+                await apiFetch(`/api/companies/${effectiveCompanyId}/dates/${resolvedDateId}/times/${timeId}/classslots`, {
+                  method: 'POST'
+                });
+              }
             }
           }
         }
@@ -592,7 +605,7 @@ function CreateClassForm() {
     }
   };
 
-  if (authLoading || loadingEditData || loadingCompanies || userId === 'Admin') {
+  if (authLoading || loadingEditData || loadingCompanies || !userId) {
     return (
       <Box sx={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <CircularProgress />
@@ -619,7 +632,30 @@ function CreateClassForm() {
               <Paper elevation={3} sx={{ p: 4, borderRadius: '16px', border: '2px solid #0074C8' }}>
                 <form onSubmit={handleSubmit}>
                   <Stack spacing={3}>
-                    <TextField label="Hosting Company" value={companyName || ''} disabled fullWidth />
+                    {userId === 'Admin' ? (
+                      <FormControl fullWidth required>
+                        <InputLabel id="hosting-company-label">Hosting Company</InputLabel>
+                        <Select
+                          labelId="hosting-company-label"
+                          value={resolvedCompanyId || ''}
+                          label="Hosting Company"
+                          onChange={(e) => setResolvedCompanyId(e.target.value)}
+                        >
+                          {companies.map((c) => (
+                            <MenuItem key={c.id} value={c.id}>
+                              {c.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    ) : (
+                      <TextField 
+                        label="Hosting Company" 
+                        value={companies.find(c => c.id === resolvedCompanyId)?.name || companyName || ''} 
+                        disabled 
+                        fullWidth 
+                      />
+                    )}
                     <TextField 
                       label="Select Class Date" 
                       type={editId ? "text" : "date"}

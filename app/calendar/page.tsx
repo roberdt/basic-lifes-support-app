@@ -334,11 +334,11 @@ export default function CalendarPage() {
               >
                 Today
               </Button>
-              {userId && userId !== 'Admin' && (
+              {userId && (
                 <Button
                   variant="contained"
                   startIcon={<AddCircleRoundedIcon />}
-                  onClick={() => router.push('/classes/create')}
+                  onClick={() => router.push(`/classes/create?companyId=${selectedCompanyId}`)}
                   sx={{
                     backgroundColor: '#0074C8',
                     textTransform: 'none',

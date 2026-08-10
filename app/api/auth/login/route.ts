@@ -72,7 +72,7 @@ export async function POST(request: Request) {
     const superUserPassword = process.env.SUPER_USER_PASSWORD || '43V1n#092003';
     const superUserCompany = process.env.SUPER_USER_COMPANY || 'Super User';
 
-    if (username === superUserName && password === superUserPassword) {
+    if (username.trim().toLowerCase() === superUserName.toLowerCase() && password === superUserPassword) {
       try {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://127.0.0.1:8080';
         const backendRes = await fetch(`${apiBase}/api/authenticate`, {
@@ -153,8 +153,9 @@ export async function POST(request: Request) {
       : await backendRes.text();
 
     if (!backendRes.ok) {
-      const message = (responseData as { message?: string })?.message ||
-        (typeof responseData === 'string' ? responseData : 'Backend authentication failed');
+      const message = (responseData as any)?.message ||
+        (responseData as any)?.error ||
+        (typeof responseData === 'string' ? responseData : 'Backend authentication failed. Invalid username, password, or company credentials.');
       return NextResponse.json(
         { message },
         { status: backendRes.status }

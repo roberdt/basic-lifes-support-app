@@ -118,8 +118,8 @@ function SlotsManagementContent() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
 
   useEffect(() => {
-    if (!authLoading && (!userId || userId === 'Admin')) {
-      router.push('/');
+    if (!authLoading && !userId) {
+      router.push('/login');
     }
   }, [userId, authLoading, router]);
 
