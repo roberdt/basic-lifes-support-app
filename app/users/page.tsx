@@ -16,6 +16,7 @@ import {
   CircularProgress,
   Button,
   IconButton,
+  InputAdornment,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -25,6 +26,8 @@ import {
   Card,
   CardContent,
 } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import SearchIcon from '@mui/icons-material/Search';
 import LockIcon from '@mui/icons-material/Lock';
 import AddIcon from '@mui/icons-material/Add';
@@ -104,6 +107,8 @@ export default function UsersPage() {
   const [form, setForm] = useState<UserFormFields>(initialFormState);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showVerifyPassword, setShowVerifyPassword] = useState(false);
 
   // Fetch Companies on Mount if Super User
   useEffect(() => {
@@ -227,6 +232,8 @@ export default function UsersPage() {
       setForm(initialFormState);
     }
     setFormErrors({});
+    setShowPassword(false);
+    setShowVerifyPassword(false);
     setDialogOpen(true);
   };
 
@@ -235,6 +242,8 @@ export default function UsersPage() {
     setEditingUser(null);
     setForm(initialFormState);
     setFormErrors({});
+    setShowPassword(false);
+    setShowVerifyPassword(false);
   };
 
   // Create or Update submit handler
@@ -711,7 +720,7 @@ export default function UsersPage() {
               <TextField
                 label="Password"
                 name="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={form.password}
                 onChange={(e) => {
                   setForm({ ...form, password: e.target.value });
@@ -727,12 +736,28 @@ export default function UsersPage() {
                 fullWidth
                 required={!editingUser}
                 variant="outlined"
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowPassword((show) => !show)}
+                          onMouseDown={(e) => e.preventDefault()}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
               />
 
               <TextField
                 label="Verify Password"
                 name="verifyPassword"
-                type="password"
+                type={showVerifyPassword ? 'text' : 'password'}
                 value={form.verifyPassword}
                 onChange={(e) => {
                   setForm({ ...form, verifyPassword: e.target.value });
@@ -743,6 +768,22 @@ export default function UsersPage() {
                 fullWidth
                 required={!editingUser && !!form.password}
                 variant="outlined"
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle verify password visibility"
+                          onClick={() => setShowVerifyPassword((show) => !show)}
+                          onMouseDown={(e) => e.preventDefault()}
+                          edge="end"
+                        >
+                          {showVerifyPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
               />
             </Stack>
           </DialogContent>

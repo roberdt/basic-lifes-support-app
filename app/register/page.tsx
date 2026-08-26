@@ -8,11 +8,15 @@ import {
   Box,
   Button,
   CircularProgress,
+  IconButton,
+  InputAdornment,
   Paper,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useMessage } from '@/context/MessageContext';
 import Pfapappbar from '@/components/pfapappbar';
 import Pfapcontainer from '@/components/pfapcontainer';
@@ -91,6 +95,8 @@ export default function RegisterPage() {
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState<RegisterErrors>({});
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showVerifyPassword, setShowVerifyPassword] = useState(false);
   const { setMessage, clearMessage } = useMessage();
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -222,7 +228,7 @@ export default function RegisterPage() {
 
               <TextField
                 name="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 label="Password"
                 value={form.password}
                 onChange={onChange}
@@ -230,11 +236,27 @@ export default function RegisterPage() {
                 helperText={errors.password || 'Password must be 8 characters or greater and contain #, $, or &.'}
                 required
                 fullWidth
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowPassword((show) => !show)}
+                          onMouseDown={(e) => e.preventDefault()}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
               />
 
               <TextField
                 name="verifyPassword"
-                type="password"
+                type={showVerifyPassword ? 'text' : 'password'}
                 label="Verify Password"
                 value={form.verifyPassword}
                 onChange={onChange}
@@ -242,6 +264,22 @@ export default function RegisterPage() {
                 helperText={errors.verifyPassword || ''}
                 required
                 fullWidth
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle verify password visibility"
+                          onClick={() => setShowVerifyPassword((show) => !show)}
+                          onMouseDown={(e) => e.preventDefault()}
+                          edge="end"
+                        >
+                          {showVerifyPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
               />
 
               <TextField

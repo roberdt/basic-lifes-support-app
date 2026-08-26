@@ -7,11 +7,15 @@ import {
   Box,
   Button,
   CircularProgress,
+  IconButton,
+  InputAdornment,
   Paper,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useAuth } from '@/context/AuthContext';
 import { useMessage } from '@/context/MessageContext';
 import Pfapappbar from '@/components/pfapappbar';
@@ -22,6 +26,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [companyNameInput, setCompanyNameInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [recaptchaId, setRecaptchaId] = useState<number | null>(null);
@@ -175,11 +180,27 @@ export default function LoginPage() {
                     fullWidth
                     name="password"
                     label="Password"
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     id="password"
                     autoComplete="current-password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={() => setShowPassword((show) => !show)}
+                              onMouseDown={(e) => e.preventDefault()}
+                              edge="end"
+                            >
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
                   />
 
                   {/* Company Name Input Text Field (Bypassed if user is Admin) */}
