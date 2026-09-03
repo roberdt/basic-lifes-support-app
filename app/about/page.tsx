@@ -4,14 +4,15 @@ import { Box, Paper, Stack, Typography } from '@mui/material';
 import Pfapappbar from '@/components/pfapappbar';
 import Pfapcontainer from '@/components/pfapcontainer';
 import Pfapfooter from '@/components/pfapfooter';
+import Dashboard from '@/components/Dashboard';
 
 export default function AboutPage() {
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#f5f5f5' }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#f0f4f8' }}>
       <Pfapappbar />
 
       <Box sx={{ flex: 1, pb: 12 }}>
-        <Pfapcontainer maxWidth="md">
+        <Pfapcontainer maxWidth="lg">
           <Paper
             elevation={0}
             sx={{
@@ -20,10 +21,11 @@ export default function AboutPage() {
               borderColor: 'divider',
               borderRadius: 4,
               p: 3,
+              mb: 4,
             }}
           >
             <Stack spacing={2}>
-              <Typography component="h1" variant="h4" sx={{ color: '#00518c' }}>
+              <Typography component="h1" variant="h4" sx={{ color: '#00518c', fontWeight: 700 }}>
                 About the BLS Scheduler
               </Typography>
               <Typography color="text.secondary">
@@ -36,6 +38,9 @@ export default function AboutPage() {
               </Typography>
             </Stack>
           </Paper>
+
+          {/* Sample Dashboard view placed directly below paragraph */}
+          <Dashboard />
         </Pfapcontainer>
       </Box>
 
