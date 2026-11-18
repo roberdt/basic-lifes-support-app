@@ -27,6 +27,7 @@ type RegisterForm = {
   username: string;
   fullname: string;
   emailAddress: string;
+  phonenumber: string;
   companyName: string;
   password: string;
   verifyPassword: string;
@@ -44,10 +45,21 @@ const initialForm: RegisterForm = {
   username: '',
   fullname: '',
   emailAddress: '',
+  phonenumber: '',
   companyName: '',
   password: '',
   verifyPassword: '',
   purpose: '',
+};
+
+const formatPhoneNumber = (value: string): string => {
+  const cleaned = value.replace(/\D/g, '');
+  const truncated = cleaned.slice(0, 10);
+
+  if (truncated.length === 0) return '';
+  if (truncated.length <= 3) return `(${truncated}`;
+  if (truncated.length <= 6) return `(${truncated.slice(0, 3)}) ${truncated.slice(3)}`;
+  return `(${truncated.slice(0, 3)}) ${truncated.slice(3, 6)}-${truncated.slice(6)}`;
 };
 
 function validate(form: RegisterForm): RegisterErrors {
@@ -65,6 +77,12 @@ function validate(form: RegisterForm): RegisterErrors {
     errors.emailAddress = 'Email is required.';
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.emailAddress.trim())) {
     errors.emailAddress = 'Enter a valid email address.';
+  }
+
+  if (!form.phonenumber.trim()) {
+    errors.phonenumber = 'Phone number is required.';
+  } else if (form.phonenumber.trim().length !== 14) {
+    errors.phonenumber = 'Phone number must be complete, e.g. (734) 770-8457.';
   }
 
   if (!form.companyName.trim()) errors.companyName = 'Organization/ Company is required.';
@@ -101,7 +119,8 @@ export default function RegisterPage() {
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target as HTMLInputElement & { name: keyof RegisterForm };
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const nextValue = name === 'phonenumber' ? formatPhoneNumber(value) : value;
+    setForm((prev) => ({ ...prev, [name]: nextValue }));
     setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
@@ -116,6 +135,7 @@ export default function RegisterPage() {
         nextErrors.fullname ||
           nextErrors.username ||
           nextErrors.emailAddress ||
+          nextErrors.phonenumber ||
           nextErrors.companyName ||
           nextErrors.password ||
           nextErrors.verifyPassword ||
@@ -133,6 +153,7 @@ export default function RegisterPage() {
         username: form.username.trim(),
         fullname: form.fullname.trim(),
         emailAddress: form.emailAddress.trim(),
+        phonenumber: form.phonenumber.trim(),
         companyName: form.companyName.trim(),
         password: form.password,
         verifyPassword: form.verifyPassword,
@@ -211,6 +232,19 @@ export default function RegisterPage() {
                 onChange={onChange}
                 error={Boolean(errors.emailAddress)}
                 helperText={errors.emailAddress || ''}
+                required
+                fullWidth
+              />
+
+              <TextField
+                name="phonenumber"
+                type="tel"
+                label="Phone Number"
+                value={form.phonenumber}
+                onChange={onChange}
+                placeholder="(734) 770-8457"
+                error={Boolean(errors.phonenumber)}
+                helperText={errors.phonenumber || 'Format: (734) 770-8457'}
                 required
                 fullWidth
               />

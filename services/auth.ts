@@ -75,6 +75,7 @@ export interface RegisterPayload {
   username: string;
   fullname: string;
   emailAddress: string;
+  phonenumber: string;
   companyName: string;
   password: string;
   verifyPassword?: string;
