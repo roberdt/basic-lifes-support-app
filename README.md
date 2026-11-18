@@ -53,6 +53,8 @@ npm run typecheck
 
 ## Project Structure
 
+- `GEMINI.md` - AI assistant project context, architectural guidelines, and rule index
+- `.agents/rules/` - modular AI agent guidelines and architecture documentation (see [frontend-structure.md](.agents/rules/frontend-structure.md))
 - `app/layout.tsx` - root App Router layout
 - `app/providers.tsx` - global Material UI theme, auth, and message providers
 - `app/page.tsx` - home page

@@ -17,7 +17,7 @@ interface LoginResponse {
 
 /**************************************************
  * login()
- * Sends a POST request to the /auth/login endpoint with the provided username and password
+ * Sends a POST request to the /api/auth/login endpoint with the provided username and password
  * Returns a Promise that resolves to a LoginResponse object containing the token and user info on success
  * Throws an error with a message if the login fails
  **************************************************/
@@ -46,7 +46,14 @@ export async function login(
   const data = contentType.includes('application/json') ? await res.json() : await res.text();
 
   if (!res.ok) {
-    throw new Error((data as LoginResponse)?.message || `Login failed (${res.status})`);
+    const rawMessage = (data as LoginResponse)?.message;
+    const message =
+      rawMessage && rawMessage.trim().toLowerCase() !== 'forbidden'
+        ? rawMessage
+        : res.status === 403 || res.status === 401
+        ? 'Invalid username, password, or company credentials. Please check your login details and try again.'
+        : `Login failed (${res.status})`;
+    throw new Error(message);
   }
   return data as LoginResponse;
 }
@@ -98,5 +105,3 @@ export async function register(payload: RegisterPayload): Promise<RegisterRespon
   if (!ok) throw new Error((data as RegisterResponse)?.message || 'Registration failed');
   return data as RegisterResponse;
 }
-
-

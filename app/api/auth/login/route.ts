@@ -80,7 +80,7 @@ export async function POST(request: Request) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ username, password }),
+          body: JSON.stringify({ username: superUserName, password }),
         });
 
         if (backendRes.ok) {
@@ -132,11 +132,11 @@ export async function POST(request: Request) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username,
+          username: username.trim(),
           password,
-          ...(companyId ? { companyId } : {}),
-          ...(companyName ? { companyName } : {}),
-          ...(companyName ? { company: companyName } : {})
+          ...(companyId ? { companyId: companyId.trim() } : {}),
+          ...(companyName ? { companyName: companyName.trim() } : {}),
+          ...(companyName ? { company: companyName.trim() } : {})
         }),
       });
     } catch (err: any) {
@@ -153,9 +153,19 @@ export async function POST(request: Request) {
       : await backendRes.text();
 
     if (!backendRes.ok) {
-      const message = (responseData as any)?.message ||
-        (responseData as any)?.error ||
-        (typeof responseData === 'string' ? responseData : 'Backend authentication failed. Invalid username, password, or company credentials.');
+      let message = (responseData as any)?.message;
+      if (!message || message.trim().toLowerCase() === 'forbidden') {
+        const errorField = (responseData as any)?.error;
+        if (errorField && errorField.trim().toLowerCase() !== 'forbidden') {
+          message = errorField;
+        } else if (backendRes.status === 403 || backendRes.status === 401) {
+          message = 'Invalid username, password, or company credentials. Please verify your details and try again.';
+        } else if (typeof responseData === 'string' && responseData.trim() && responseData.trim().toLowerCase() !== 'forbidden') {
+          message = responseData;
+        } else {
+          message = 'Backend authentication failed. Invalid username, password, or company credentials.';
+        }
+      }
       return NextResponse.json(
         { message },
         { status: backendRes.status }

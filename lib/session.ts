@@ -6,8 +6,11 @@ export interface Session {
   expiresAt: number;
 }
 
+export const SESSION_DURATION_MS = 30 * 60 * 1000;
+export const WARNING_THRESHOLD_MS = 2 * 60 * 1000; // 2 minute countdown warning
+
 const SESSION_KEY = 'pfap_session';
-const THIRTY_MINUTES = 30 * 60 * 1000;
+const THIRTY_MINUTES = SESSION_DURATION_MS;
 
 /**************************************************
  * createSession()
@@ -31,6 +34,22 @@ export function createSession(jwt: string, userId: string, companyName?: string,
 export function saveSession(session: Session): void {
   if (typeof window === 'undefined') return;
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+}
+
+/**************************************************
+ * extendSession()
+ * Extends the active session by resetting expiresAt to 30 minutes from now.
+ **************************************************/
+export function extendSession(): Session | null {
+  const current = getSession();
+  if (!current) return null;
+
+  const updated: Session = {
+    ...current,
+    expiresAt: Date.now() + THIRTY_MINUTES,
+  };
+  saveSession(updated);
+  return updated;
 }
 
 /**************************************************
@@ -84,5 +103,3 @@ export function getSession(): Session | null {
 export function getToken(): string | null {
   return getSession()?.jwt ?? null;
 }
-
-

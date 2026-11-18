@@ -4,6 +4,7 @@ import React, { useState, useEffect, type ReactNode } from 'react';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { AuthProvider } from '@/context/AuthContext';
 import { MessageProvider } from '@/context/MessageContext';
+import SessionTimeoutModal from '@/components/SessionTimeoutModal';
 import theme from '@/theme';
 
 type ProvidersProps = {
@@ -21,9 +22,11 @@ export default function Providers({ children }: ProvidersProps) {
     <ThemeProvider theme={theme}>
       {mounted && <CssBaseline />}
       <AuthProvider>
-        <MessageProvider>{children}</MessageProvider>
+        <MessageProvider>
+          {mounted && <SessionTimeoutModal />}
+          {children}
+        </MessageProvider>
       </AuthProvider>
     </ThemeProvider>
   );
 }
-

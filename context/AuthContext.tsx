@@ -2,7 +2,7 @@
 
 import React, { createContext, useEffect, useContext, useState, ReactNode } from 'react';
 import * as authService from '@/services/auth';
-import { clearSession, createSession, getSession, saveSession, Session } from '@/lib/session';
+import { clearSession, createSession, extendSession as sessionExtendSession, getSession, saveSession, Session } from '@/lib/session';
 
 /**************************************************
  * User
@@ -48,6 +48,7 @@ interface AuthContextValue {
     companyName?: string
   ) => Promise<LoginData>;
   logout: () => void;
+  extendSession: () => Session | null;
   loading: boolean;
 }
 
@@ -154,6 +155,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setSession(null);
   };
 
+  const extendSession = (): Session | null => {
+    const updated = sessionExtendSession();
+    if (updated) {
+      setSession(updated);
+      return updated;
+    }
+    return null;
+  };
+
   return (
     <AuthContext.Provider value={{
       session,
@@ -162,6 +172,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       companyId: session?.companyId ?? null,
       login,
       logout,
+      extendSession,
       loading
     }}>
       {children}
@@ -180,4 +191,3 @@ export function useAuth(): AuthContextValue {
   if (!ctx) throw new Error('useAuth must be used within an AuthProvider');
   return ctx;
 }
-

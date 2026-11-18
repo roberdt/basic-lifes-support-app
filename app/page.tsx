@@ -62,19 +62,41 @@ export default function HomePage() {
             }}
           >
             <Stack spacing={2.5} sx={{ alignItems: 'center' }}>
-              {/* Medical/Safety Badge Icon */}
-              <Avatar
-                sx={{
-                  width: 60,
-                  height: 60,
-                  backgroundColor: 'rgba(0, 81, 140, 0.08)',
-                  color: '#00518c',
-                  border: '2px solid rgba(0, 81, 140, 0.2)',
-                  boxShadow: '0 4px 16px rgba(0, 81, 140, 0.15)',
-                }}
-              >
-                <HealthAndSafetyIcon sx={{ fontSize: 36 }} />
-              </Avatar>
+              {/* Dual Icon Row: Medical Cross & CPR Badge */}
+              <Stack direction="row" spacing={3} sx={{ alignItems: 'center', justifyContent: 'center' }}>
+                {/* Icon 1: Medical Cross */}
+                <Avatar
+                  sx={{
+                    width: 68,
+                    height: 68,
+                    backgroundColor: 'rgba(0, 81, 140, 0.08)',
+                    color: '#00518c',
+                    border: '2px solid rgba(0, 81, 140, 0.25)',
+                    boxShadow: '0 4px 16px rgba(0, 81, 140, 0.15)',
+                  }}
+                >
+                  <HealthAndSafetyIcon sx={{ fontSize: 40 }} />
+                </Avatar>
+
+                {/* Icon 2: CPR Image Badge (Same Size) */}
+                <Avatar
+                  sx={{
+                    width: 68,
+                    height: 68,
+                    backgroundColor: '#00518c',
+                    border: '2px solid rgba(0, 81, 140, 0.25)',
+                    boxShadow: '0 4px 16px rgba(0, 81, 140, 0.15)',
+                    p: 1.25,
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src="/cpr-icon.png"
+                    alt="CPR Life Support"
+                    sx={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  />
+                </Avatar>
+              </Stack>
 
               {/* Element 1: Big Welcome */}
               <Typography
